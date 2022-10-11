@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.entity.Board;
 import com.example.backend.service.BoardRepository;
+import com.example.backend.service.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,10 @@ import java.util.Map;
 public class HomeController {
     @Autowired
     BoardRepository boardRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
 
     @ResponseBody
     @RequestMapping("/api/board")
@@ -36,5 +41,14 @@ public class HomeController {
         System.out.println("/login");
         System.out.println(data.get("id"));
         System.out.println(data.get("pw"));
+
+        String id = data.get("id");
+        String pw = data.get("pw");
+
+        if(userRepository.searchUser(id, pw) == 0){
+            System.out.println("don't exist");
+        }
+
+
     }
 }
