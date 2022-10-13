@@ -1,6 +1,8 @@
 package com.example.backend.controller;
 
 import com.example.backend.entity.Board;
+import com.example.backend.entity.User;
+import com.example.backend.security.JwtTokenProvider;
 import com.example.backend.service.BoardRepository;
 import com.example.backend.service.UserRepository;
 import org.slf4j.Logger;
@@ -20,6 +22,9 @@ public class HomeController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
@@ -57,7 +62,25 @@ public class HomeController {
         }else{
             log.info("success login : {}", id);
             result.put("resultCode", "true");
+            User user = userRepository.getUser(id);
+            String token = jwtTokenProvider.createToken(user);
+            result.put("jwt_token", token);
             return result;
         }
+    }
+
+    @RequestMapping(value = "/search")
+    public HashMap search(@RequestBody HashMap<String, String> data){
+        HashMap<String, String> result = new HashMap<>();
+
+        if(jwtTokenProvider.validateToken(data.get("jwt_token"))){
+            String role = jwtTokenProvider.getUserRole(data.get("jwt_token"));
+            log.info("role : {}", role);
+            result.put("resultCode", "true");
+        }else{
+            log.info("jwt_token error");
+            result.put("resultCode", "jwt-error");
+        }
+        return result;
     }
 }

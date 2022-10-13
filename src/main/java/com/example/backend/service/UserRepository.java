@@ -11,5 +11,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value="select EXISTS (select * from user_tb where id=:id and pw=:pw)", nativeQuery = true)
     int searchUser(String id, String pw);
 
+    @Query(value="select num, id, pw, role from user_tb where id=:id", nativeQuery = true)
+    User getUser(String id);
 
 }

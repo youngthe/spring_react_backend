@@ -13,4 +13,22 @@ public class User {
 
     private String pw;
 
+    private String role;
+
+    public int getNum() {
+        return num;
+    }
+    public String getId() {
+        return id;
+    }
+
+    public String getPw() {
+        return pw;
+    }
+
+
+    public String getRole() {
+        return role;
+    }
+
 }
