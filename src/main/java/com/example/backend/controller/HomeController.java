@@ -83,4 +83,27 @@ public class HomeController {
         }
         return result;
     }
+
+
+    @RequestMapping(value = "/register")
+    public HashMap register(@RequestBody HashMap<String, String> data){
+        HashMap<String, String> result = new HashMap<>();
+
+        String id = data.get("id");
+        String pw = data.get("pw");
+
+        log.info("id : {}", id);
+        log.info("pw : {}", pw);
+
+        try{
+            userRepository.registerUser(id, pw);
+            result.put("resultCode", "true");
+        }catch(Exception e){
+            result.put("resultCode", "false");
+        }
+
+        return result;
+    }
+
+
 }
