@@ -1,9 +1,11 @@
 package com.example.backend.controller;
 
 import com.example.backend.entity.Board;
+import com.example.backend.entity.Shop;
 import com.example.backend.entity.User;
 import com.example.backend.security.JwtTokenProvider;
-import com.example.backend.service.BoardRepository;
+import com.example.backend.service.BasketRepository;
+import com.example.backend.service.ShopRepository;
 import com.example.backend.service.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,39 +20,27 @@ import java.util.Map;
 @RestController
 public class HomeController {
     @Autowired
-    BoardRepository boardRepository;
-
-    @Autowired
     UserRepository userRepository;
-
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    ShopRepository shopRepository;
+
+    @Autowired
+    BasketRepository basketRepository;
+
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    @ResponseBody
-    @RequestMapping("/api/board")
-    public List<Board> getAllBoards() {
-        System.out.println("/api/board");
-        return boardRepository.get_Board();
-    }
 
-
-
-    @RequestMapping(value = "/api/board", method = RequestMethod.POST)
-    public void createBoard(@RequestBody Board board) {
-        log.info("/api/board");
-
-        boardRepository.set_Board(board.getTitle());
-    }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public HashMap<String, String> login(@RequestBody HashMap<String, String> data) {
+    public HashMap login(@RequestBody HashMap<String, String> data) {
         log.info("/login");
         log.info("id : {}", data.get("id"));
         log.info("pw : {}", data.get("pw"));
 
-        HashMap<String, String> result = new HashMap<>();
+        HashMap<String, Object> result = new HashMap<>();
         String id = data.get("id");
         String pw = data.get("pw");
 
@@ -71,7 +61,7 @@ public class HomeController {
 
     @RequestMapping(value = "/search")
     public HashMap search(@RequestBody HashMap<String, String> data){
-        HashMap<String, String> result = new HashMap<>();
+        HashMap<String, Object> result = new HashMap<>();
 
         if(jwtTokenProvider.validateToken(data.get("jwt_token"))){
             String role = jwtTokenProvider.getUserRole(data.get("jwt_token"));
@@ -87,7 +77,7 @@ public class HomeController {
 
     @RequestMapping(value = "/register")
     public HashMap register(@RequestBody HashMap<String, String> data){
-        HashMap<String, String> result = new HashMap<>();
+        HashMap<String, Object> result = new HashMap<>();
 
         String id = data.get("id");
         String pw = data.get("pw");
@@ -105,5 +95,37 @@ public class HomeController {
         return result;
     }
 
+    @RequestMapping(value = "/shopping")
+    public HashMap main_shop(){
+        HashMap<String, Object> result = new HashMap<>();
 
+        List<Shop> list;
+        list = shopRepository.getAllShop();
+
+        result.put("list", list);
+        result.put("resultCode", "true");
+        return result;
+    }
+
+
+    @RequestMapping(value = "/my-shop/{id}")
+    public HashMap shop_back(@PathVariable("id") Integer num, @RequestBody HashMap<String, String> data){
+        HashMap<String, Object> result = new HashMap<>();
+
+        String token = data.get("jwt_token");
+
+        log.info(token);
+        String id = jwtTokenProvider.getUserId(token);
+
+        try{
+            basketRepository.setBasket(id, num);
+            result.put("resultCode", "true");
+        }catch(Exception e){
+            log.info("my-shop error");
+            log.info("{}", e);
+            result.put("resultCode", "false");
+        }
+
+        return result;
+    }
 }
