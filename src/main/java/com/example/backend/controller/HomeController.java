@@ -69,7 +69,7 @@ public class HomeController {
             result.put("resultCode", "true");
         }else{
             log.info("jwt_token error");
-            result.put("resultCode", "jwt-error");
+            result.put("resultCode", "jwt-expired");
         }
         return result;
     }
@@ -113,18 +113,25 @@ public class HomeController {
         HashMap<String, Object> result = new HashMap<>();
 
         String token = data.get("jwt_token");
-
         log.info(token);
-        String id = jwtTokenProvider.getUserId(token);
 
-        try{
-            basketRepository.setBasket(id, num);
-            result.put("resultCode", "true");
-        }catch(Exception e){
-            log.info("my-shop error");
-            log.info("{}", e);
-            result.put("resultCode", "false");
+
+        if(jwtTokenProvider.validateToken(token)){
+
+            String id = jwtTokenProvider.getUserId(token);
+            try{
+                basketRepository.setBasket(id, num);
+                result.put("resultCode", "true");
+            }catch(Exception e){
+                log.info("my-shop error");
+                log.info("{}", e);
+                result.put("resultCode", "false");
+            }
+        }else{
+            log.info("jwt-expired");
+            result.put("resultCode", "jwt-expired");
         }
+
 
         return result;
     }
