@@ -16,4 +16,9 @@ public interface BasketRepository extends JpaRepository<Basket, Integer> {
     @Query(value="insert into basket(userid, item_id) values (:userid, :item_id)", nativeQuery = true)
     void setBasket(String userid, Integer item_id);
 
+
+    @Query(value="select EXISTS (select userid, item_id from basket where userid=:userid and item_id=:item_id)", nativeQuery = true)
+    int isEmptyBasket(String userid, int item_id);
+
+
 }

@@ -120,8 +120,15 @@ public class HomeController {
 
             String id = jwtTokenProvider.getUserId(token);
             try{
-                basketRepository.setBasket(id, num);
-                result.put("resultCode", "true");
+                if(basketRepository.isEmptyBasket(id, num) == 1){
+                    log.info("장바구니에 이미 존재합니다.");
+                    result.put("resultCode", "true");
+                    result.put("message", "exist");
+                }else{
+                    basketRepository.setBasket(id, num);
+                    result.put("resultCode", "true");
+                }
+
             }catch(Exception e){
                 log.info("my-shop error");
                 log.info("{}", e);
