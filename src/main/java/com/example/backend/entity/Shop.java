@@ -14,7 +14,6 @@ public class Shop {
 
     private int price;
 
-    private String sortation;
 
     public int getId() {
         return id;
@@ -40,11 +39,4 @@ public class Shop {
         this.price = price;
     }
 
-    public String getSortation() {
-        return sortation;
-    }
-
-    public void setSortation(String sortation) {
-        this.sortation = sortation;
-    }
 }
