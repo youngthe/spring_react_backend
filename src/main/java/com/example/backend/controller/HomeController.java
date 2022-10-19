@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-import com.example.backend.entity.Board;
 import com.example.backend.entity.Shop;
 import com.example.backend.entity.User;
 import com.example.backend.security.JwtTokenProvider;
@@ -140,6 +139,17 @@ public class HomeController {
         }
 
 
+        return result;
+    }
+
+    @RequestMapping(value = "/show-my-shopping")
+    public HashMap showMyShopping(@RequestBody HashMap<String, String> data){
+        HashMap<String, Object> result = new HashMap<>();
+        String token = data.get("jwt_token");
+        String id = jwtTokenProvider.getUserId(token);
+        List<Shop> list = shopRepository.getBasket(id);
+        result.put("list", list);
+        result.put("resultCode", "true");
         return result;
     }
 }
