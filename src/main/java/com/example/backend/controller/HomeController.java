@@ -152,4 +152,20 @@ public class HomeController {
         result.put("resultCode", "true");
         return result;
     }
+
+    @RequestMapping(value = "/delete-my-shopping/{id}")
+    public HashMap deleteMyShopping(@PathVariable("id") Integer num, @RequestBody HashMap<String, String> data){
+        HashMap<String, Object> result = new HashMap<>();
+        String token = data.get("jwt_token");
+        String id = jwtTokenProvider.getUserId(token);
+        try{
+            basketRepository.deleteBasket(id, num);
+            result.put("resultCode", "true");
+            return result;
+        }catch(Exception e){
+            log.info("{}", e);
+            result.put("resultCode","false");
+            return result;
+        }
+    }
 }

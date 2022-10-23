@@ -20,5 +20,9 @@ public interface BasketRepository extends JpaRepository<Basket, Integer> {
     @Query(value="select EXISTS (select userid, item_id from basket where userid=:userid and item_id=:item_id)", nativeQuery = true)
     int isEmptyBasket(String userid, int item_id);
 
+    @Transactional
+    @Modifying
+    @Query(value="delete from basket where userid=:userid and item_id =:item_id", nativeQuery = true)
+    void deleteBasket(String userid, Integer item_id);
 
 }
