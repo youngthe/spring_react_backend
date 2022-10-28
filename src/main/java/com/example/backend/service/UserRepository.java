@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "insert into user_tb(id, pw) values(:id, :pw)", nativeQuery = true)
     void setByUseridAndPw(String id, String pw);
 
+    @Query(value="select EXISTS (select * from user_tb where id=:id)", nativeQuery = true)
+    int existById(String id);
 }

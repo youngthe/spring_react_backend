@@ -83,8 +83,13 @@ public class HomeController {
         log.info("pw : {}", pw);
 
         try{
+            if(userRepository.existById(id) == 0){
                 userRepository.setByUseridAndPw(id, pw);
                 result.put("resultCode", "true");
+            }else{
+                result.put("resultCode", "false");
+                result.put("message", "exist");
+            }
 
         }catch(Exception e){
             result.put("resultCode", "false");
