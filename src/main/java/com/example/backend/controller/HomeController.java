@@ -22,10 +22,8 @@ public class HomeController {
     UserRepository userRepository;
     @Autowired
     JwtTokenProvider jwtTokenProvider;
-
     @Autowired
     ShopRepository shopRepository;
-
     @Autowired
     BasketRepository basketRepository;
 
@@ -43,7 +41,7 @@ public class HomeController {
         String id = data.get("id");
         String pw = data.get("pw");
 
-        if(userRepository.searchUser(id, pw) == 0) {
+        if(userRepository.findByIdAndPw(id, pw) == 0) {
 
             log.info("not found user");
             result.put("resultCode", "false");
@@ -51,7 +49,7 @@ public class HomeController {
         }else{
             log.info("success login : {}", id);
             result.put("resultCode", "true");
-            User user = userRepository.getUser(id);
+            User user = userRepository.findById(id);
             String token = jwtTokenProvider.createToken(user);
             result.put("jwt_token", token);
             return result;
@@ -85,12 +83,12 @@ public class HomeController {
         log.info("pw : {}", pw);
 
         try{
-            userRepository.registerUser(id, pw);
-            result.put("resultCode", "true");
+                userRepository.setByUseridAndPw(id, pw);
+                result.put("resultCode", "true");
+
         }catch(Exception e){
             result.put("resultCode", "false");
         }
-
         return result;
     }
 
@@ -99,7 +97,7 @@ public class HomeController {
         HashMap<String, Object> result = new HashMap<>();
 
         List<Shop> list;
-        list = shopRepository.getAllShop();
+        list = shopRepository.findAllShop();
 
         result.put("list", list);
         result.put("resultCode", "true");
@@ -117,14 +115,14 @@ public class HomeController {
 
         if(jwtTokenProvider.validateToken(token)){
 
-            String id = jwtTokenProvider.getUserId(token);
+            String userid = jwtTokenProvider.getUserId(token);
             try{
-                if(basketRepository.isEmptyBasket(id, num) == 1){
+                if(basketRepository.existsByUseridAndItemid(userid, num) == 1){
                     log.info("장바구니에 이미 존재합니다.");
                     result.put("resultCode", "true");
                     result.put("message", "exist");
                 }else{
-                    basketRepository.setBasket(id, num);
+                    basketRepository.setByUseridAndItemid(userid, num);
                     result.put("resultCode", "true");
                 }
 
@@ -146,8 +144,8 @@ public class HomeController {
     public HashMap showMyShopping(@RequestBody HashMap<String, String> data){
         HashMap<String, Object> result = new HashMap<>();
         String token = data.get("jwt_token");
-        String id = jwtTokenProvider.getUserId(token);
-        List<Shop> list = shopRepository.getBasket(id);
+        String userid = jwtTokenProvider.getUserId(token);
+        List<Shop> list = shopRepository.findByUserid(userid);
         result.put("list", list);
         result.put("resultCode", "true");
         return result;
@@ -159,7 +157,7 @@ public class HomeController {
         String token = data.get("jwt_token");
         String id = jwtTokenProvider.getUserId(token);
         try{
-            basketRepository.deleteBasket(id, num);
+            basketRepository.deleteByUseridAndItemid(id, num);
             result.put("resultCode", "true");
             return result;
         }catch(Exception e){

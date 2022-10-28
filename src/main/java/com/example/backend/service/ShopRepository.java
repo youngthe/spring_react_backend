@@ -11,8 +11,8 @@ import java.util.List;
 public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     @Query(value="select * from shop", nativeQuery = true)
-    List<Shop> getAllShop();
+    List<Shop> findAllShop();
 
-    @Query(value="select * from shop where id IN (select item_id from basket where userid=:id)", nativeQuery = true)
-    List<Shop> getBasket(String id);
+    @Query(value="select * from shop where id IN (select item_id from basket where userid=:userid)", nativeQuery = true)
+    List<Shop> findByUserid(String userid);
 }
