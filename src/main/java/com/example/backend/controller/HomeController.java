@@ -9,12 +9,10 @@ import com.example.backend.service.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class HomeController {
@@ -56,22 +54,6 @@ public class HomeController {
         }
     }
 
-    @RequestMapping(value = "/search")
-    public HashMap search(@RequestBody HashMap<String, String> data){
-        HashMap<String, Object> result = new HashMap<>();
-
-        if(jwtTokenProvider.validateToken(data.get("jwt_token"))){
-            String role = jwtTokenProvider.getUserRole(data.get("jwt_token"));
-            log.info("role : {}", role);
-            result.put("resultCode", "true");
-        }else{
-            log.info("jwt_token error");
-            result.put("resultCode", "jwt-expired");
-        }
-        return result;
-    }
-
-
     @RequestMapping(value = "/register")
     public HashMap register(@RequestBody HashMap<String, String> data){
         HashMap<String, Object> result = new HashMap<>();
@@ -97,78 +79,5 @@ public class HomeController {
         return result;
     }
 
-    @RequestMapping(value = "/shopping")
-    public HashMap main_shop(){
-        HashMap<String, Object> result = new HashMap<>();
 
-        List<Shop> list;
-        list = shopRepository.findAllShop();
-
-        result.put("list", list);
-        result.put("resultCode", "true");
-        return result;
-    }
-
-
-    @RequestMapping(value = "/my-shop/{id}")
-    public HashMap shop_back(@PathVariable("id") Integer num, @RequestBody HashMap<String, String> data){
-        HashMap<String, Object> result = new HashMap<>();
-
-        String token = data.get("jwt_token");
-        log.info(token);
-
-
-        if(jwtTokenProvider.validateToken(token)){
-
-            String userid = jwtTokenProvider.getUserId(token);
-            try{
-                if(basketRepository.existsByUseridAndItemid(userid, num) == 1){
-                    log.info("장바구니에 이미 존재합니다.");
-                    result.put("resultCode", "true");
-                    result.put("message", "exist");
-                }else{
-                    basketRepository.setByUseridAndItemid(userid, num);
-                    result.put("resultCode", "true");
-                }
-
-            }catch(Exception e){
-                log.info("my-shop error");
-                log.info("{}", e);
-                result.put("resultCode", "false");
-            }
-        }else{
-            log.info("jwt-expired");
-            result.put("resultCode", "jwt-expired");
-        }
-
-
-        return result;
-    }
-
-    @RequestMapping(value = "/show-my-shopping")
-    public HashMap showMyShopping(@RequestBody HashMap<String, String> data){
-        HashMap<String, Object> result = new HashMap<>();
-        String token = data.get("jwt_token");
-        String userid = jwtTokenProvider.getUserId(token);
-        List<Shop> list = shopRepository.findByUserid(userid);
-        result.put("list", list);
-        result.put("resultCode", "true");
-        return result;
-    }
-
-    @RequestMapping(value = "/delete-my-shopping/{id}")
-    public HashMap deleteMyShopping(@PathVariable("id") Integer num, @RequestBody HashMap<String, String> data){
-        HashMap<String, Object> result = new HashMap<>();
-        String token = data.get("jwt_token");
-        String id = jwtTokenProvider.getUserId(token);
-        try{
-            basketRepository.deleteByUseridAndItemid(id, num);
-            result.put("resultCode", "true");
-            return result;
-        }catch(Exception e){
-            log.info("{}", e);
-            result.put("resultCode","false");
-            return result;
-        }
-    }
 }
