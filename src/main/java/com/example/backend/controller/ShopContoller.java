@@ -104,4 +104,14 @@ public class ShopContoller {
         return result;
     }
 
+    @RequestMapping(value="/addShop")
+    public HashMap addShop(@RequestBody HashMap<String, String> data){
+
+        HashMap<String,Object> result = new HashMap<>();
+
+        String name = data.get("name");
+        String price = data.get("price");
+        log.info("name = {} , price = {}",name, price);
+        return result;
+    }
 }
