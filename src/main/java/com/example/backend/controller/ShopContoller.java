@@ -5,6 +5,7 @@ import com.example.backend.security.JwtTokenProvider;
 import com.example.backend.service.BasketRepository;
 import com.example.backend.service.ShopRepository;
 import com.example.backend.service.UserRepository;
+import com.example.backend.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,8 +100,12 @@ public class ShopContoller {
         String token = data.get("jwt_token");
         String userid = jwtTokenProvider.getUserId(token);
         List<Shop> list = shopRepository.findByUserid(userid);
+        Util util = new Util();
+        int TotalPrice = util.TotalPrice(list);
+
         result.put("list", list);
         result.put("resultCode", "true");
+        result.put("TotalPrice", TotalPrice);
         return result;
     }
 
@@ -123,4 +128,5 @@ public class ShopContoller {
         }
         return result;
     }
+
 }
