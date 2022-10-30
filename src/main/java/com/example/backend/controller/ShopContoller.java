@@ -110,8 +110,17 @@ public class ShopContoller {
         HashMap<String,Object> result = new HashMap<>();
 
         String name = data.get("name");
-        String price = data.get("price");
+        int price = Integer.parseInt(data.get("price"));
         log.info("name = {} , price = {}",name, price);
+
+        try{
+            shopRepository.setByNameAndPrice(name, price);
+            result.put("resultCode", "true");
+
+        }catch(Exception e){
+            log.info("{}", e);
+            result.put("resultCode", "false");
+        }
         return result;
     }
 }
